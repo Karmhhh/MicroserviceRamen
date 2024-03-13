@@ -66,16 +66,16 @@ public class ConfigControl {
         return ResponseEntity.ok("Your Configuration: >>>\n" + x );
     }
     
-    // @GetMapping("/try")
-    // public ResponseEntity<String> tryme() {
-    // try {
-    // configService.tryOn();
-    // return ResponseEntity.ok("Done.");
-    // } catch (Exception e) {
-    // return
-    // ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error.");
-    // }
-
-    // }
+    @DeleteMapping("/deleteAll")
+    public ResponseEntity<String> deleteAll(){
+        String x = configService.deleteAllKeys();
+        return ResponseEntity.ok(x);
+    }
+    
+    @GetMapping("/getAllConfig")
+    public String getAll() {
+        return configService.getAllKeys();
+    }
+    
 
 }
