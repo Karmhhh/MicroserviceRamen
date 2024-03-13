@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import io.lettuce.core.RedisClient;
 
 @Configuration
-public class Config {
+public class ConfigFile {
     
     // Variabile definita in application.properties che prende il path dove stabilire la connessione
     @Value("${connection.variable}")
