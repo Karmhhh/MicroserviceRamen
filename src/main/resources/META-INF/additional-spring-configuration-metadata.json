@@ -1,0 +1,7 @@
+{"properties": [
+  {
+    "name": "connection.variable",
+    "type": "java.lang.String",
+    "description": "A description for 'connection.variable'"
+  }
+]}
