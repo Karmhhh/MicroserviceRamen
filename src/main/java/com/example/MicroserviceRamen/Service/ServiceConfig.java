@@ -1,14 +1,8 @@
 package com.example.MicroserviceRamen.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.example.MicroserviceRamen.dto.ConfigObj;
-
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
@@ -19,18 +13,16 @@ public class ServiceConfig {
     @Autowired
     private RedisClient client;
 
-
-    public void addConfiguration(ConfigObj obj) {
+    public void addConfiguration(String obj,String objName) {
         // Connessione sincrona al server Redis
         try (StatefulRedisConnection<String, String> connection = client.connect()) {
             // Eseguire operazioni su Redis
             RedisCommands<String, String> syncCommands = connection.sync();
-            syncCommands.set(obj.getApiCallName(), obj.toString()); // Salva un oggetto stringa
+            syncCommands.set(objName,  obj); // Salva un oggetto stringa
 
         } // La connessione viene chiusa automaticamente alla fine del blocco try
 
-        // Chiudi il client Lettuce
-        client.shutdown();
+       
     }
 
     public void deleteConfigByKey(String key) {
@@ -38,7 +30,7 @@ public class ServiceConfig {
             RedisCommands<String, String> syncCommands = connection.sync();
             syncCommands.del(key);
         }
-        client.shutdown();
+     
 
     }
 
@@ -58,7 +50,7 @@ public class ServiceConfig {
             // Elimina tutte le chiavi e i relativi valori
             syncCommands.flushall();
 
-            return "All Configurations deleted";
+            return "All Configurations deleted.";
 
         }
     }
@@ -74,7 +66,7 @@ public class ServiceConfig {
             for (String key : keys) {
                 // Ottenere il valore associato alla chiave
                 String value = syncCommands.get(key);
-                result.append("# Key: ").append(key).append("\n - Value: ").append(value).append("\n");
+                result.append("# Key: ").append(key).append("\n - Value: ").append(EncriptService.decrypt(value)).append("\n");
             }
 
             return result.toString();

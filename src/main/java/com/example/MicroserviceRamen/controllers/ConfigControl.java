@@ -1,14 +1,12 @@
 package com.example.MicroserviceRamen.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.example.MicroserviceRamen.Service.EncriptService;
 import com.example.MicroserviceRamen.Service.ServiceConfig;
 import com.example.MicroserviceRamen.dto.ConfigObj;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,22 +32,23 @@ public class ConfigControl {
         return ResponseEntity.ok(obj);
     }
 
-// Aggiunge le condfigurazioni, nel body aggiungi questo json :
-/*
- {
-	"apiCallName": "",
-	"apiCallUrl": "",
-	"apiRequestMethod": "",
-	"response": "int",
-	"responseBody": ""
-}
-*/
+    // Aggiunge le condfigurazioni, nel body aggiungi questo json :
+    /*
+     * {
+     * "apiCallName": "",
+     * "apiCallUrl": "",
+     * "apiRequestMethod": "",
+     * "response": "int",
+     * "responseBody": ""
+     * }
+     */
     @PostMapping("/addConfig")
     public ResponseEntity<String> addConfig(@RequestBody ConfigObj entity) {
 
-        configService.addConfiguration(entity);
+        configService.addConfiguration(EncriptService.encrypt(entity.toString()), entity.getApiCallName());
 
-        return ResponseEntity.ok("Configuratin Added. \n"+ entity.toString());
+        return ResponseEntity
+                .ok("Configuratin Added. \n" + entity.toString() + EncriptService.encrypt(entity.toString()));
     }
 
     @DeleteMapping("/deleteConfig")
@@ -57,25 +56,25 @@ public class ConfigControl {
 
         configService.deleteConfigByKey(entityName);
 
-        return ResponseEntity.ok("Configuratin with key "+ entityName + " Deleted. \n");
+        return ResponseEntity.ok("Configuratin with key " + entityName + " Deleted. \n");
     }
 
     @GetMapping("/getByKey")
     public ResponseEntity<String> getByKay(@RequestParam String entityName) {
-        String x = configService.getConfigByKey(entityName);
-        return ResponseEntity.ok("Your Configuration: >>>\n" + x );
+        String decoded = EncriptService.decrypt(configService.getConfigByKey(entityName));
+        return ResponseEntity.ok("Your Configuration: >>>\n" + decoded);
     }
-    
+
     @DeleteMapping("/deleteAll")
-    public ResponseEntity<String> deleteAll(){
+    public ResponseEntity<String> deleteAll() {
         String x = configService.deleteAllKeys();
         return ResponseEntity.ok(x);
     }
-    
+
     @GetMapping("/getAllConfig")
     public String getAll() {
+
         return configService.getAllKeys();
     }
-    
 
 }
